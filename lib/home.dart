@@ -3,6 +3,7 @@ import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:line_chart/icon_rendered.dart';
 import 'package:line_chart/linear_sales.dart';
 import 'package:line_chart/ordinal_sales.dart';
+import 'package:line_chart/time_series_sales.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -56,6 +57,27 @@ class _HomeState extends State<Home> {
       )
     ];
   }
+
+
+  /// Create one series with sample hard coded data.
+  static List<charts.Series<TimeSeriesSales, DateTime>> _createSampleData3() {
+    final data = [
+      new TimeSeriesSales(new DateTime(2017, 9, 19), 5),
+      new TimeSeriesSales(new DateTime(2017, 9, 26), 25),
+      new TimeSeriesSales(new DateTime(2017, 10, 3), 100),
+      new TimeSeriesSales(new DateTime(2017, 10, 10), 75),
+    ];
+
+    return [
+      new charts.Series<TimeSeriesSales, DateTime>(
+        id: 'Sales',
+        domainFn: (TimeSeriesSales sales, _) => sales.time,
+        measureFn: (TimeSeriesSales sales, _) => sales.sales,
+        data: data,
+      )
+    ];
+  }
+
 
   /// Create series list with multiple series
   static List<charts.Series<OrdinalSales, String>> _createSampleData2() {
@@ -212,7 +234,51 @@ class _HomeState extends State<Home> {
 //
 //                ]
             ),
+          ),
+
+          Divider(),
+          SizedBox(
+            width: 1000,
+            height: 400,
+
+            child: new charts.TimeSeriesChart(_createSampleData3(),
+              animate: false,
+
+              // Allow enough space in the left and right chart margins for the
+              // annotations.
+              layoutConfig: new charts.LayoutConfig(
+                  leftMarginSpec: new charts.MarginSpec.fixedPixel(60),
+                  topMarginSpec: new charts.MarginSpec.fixedPixel(20),
+                  rightMarginSpec: new charts.MarginSpec.fixedPixel(60),
+                  bottomMarginSpec: new charts.MarginSpec.fixedPixel(20)),
+              behaviors: [
+                // Define one domain and two measure annotations configured to render
+                // labels in the chart margins.
+                new charts.RangeAnnotation([
+                  new charts.RangeAnnotationSegment(
+                      45, 120, charts.RangeAnnotationAxisType.measure,
+                      startLabel: 'M1 Start',
+                      endLabel: 'M1 End',
+                      labelAnchor: charts.AnnotationLabelAnchor.end,
+                      color: charts.MaterialPalette.red.shadeDefault),
+                  new charts.RangeAnnotationSegment(
+                      0, 35, charts.RangeAnnotationAxisType.measure,
+                      startLabel: 'M1 Start',
+                      endLabel: 'M1 End',
+                      labelAnchor: charts.AnnotationLabelAnchor.end,
+                      color: charts.MaterialPalette.blue.shadeDefault),
+                  new charts.RangeAnnotationSegment(
+                      35, 45, charts.RangeAnnotationAxisType.measure,
+                      startLabel: 'Norma Conforto Init.',
+                      endLabel: 'Norma Conforto Final',
+                      labelAnchor: charts.AnnotationLabelAnchor.start,
+                      color: charts.MaterialPalette.green.shadeDefault),
+                ], defaultLabelPosition: charts.AnnotationLabelPosition.margin),
+              ]
+          ),
+
           )
+
         ],
       ),
     );
